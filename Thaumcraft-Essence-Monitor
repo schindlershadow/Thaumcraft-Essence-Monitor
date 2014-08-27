@@ -1,0 +1,88 @@
+start = 10
+mon = peripheral.wrap("front")
+peripherals = peripheral.getNames()
+x, y = mon.getSize()
+aspects = {"Aer", "Aqua", "Ignis", "Ordo", "Perditio", "Terra", "Gelum", "Lux", "Motus", "Potentia", "Saxum", "Vacuos", "Victus", "Bestia", "Fames", "Granum", "Iter", "Limus", "Metallum", "Mortuus", "Permutatio", "Praecantatio", "Sano", "Tempestas", "Tenebrae", "Vinculum", "Vitreus", "Volatus", "Tempus", "Alienis", "Auram", "Corpus", "Exanimis", "Herba", "Spiritus", "Venenum", "Arbor", "Cognitio", "Sensus", "Humanus", "Instrumentum", "Lucrum", "Messis", "Perfodio", "Fabrico", "Machina", "Meto", "Pannus", "Tutamen"}
+essence = {}
+labels = {}
+--jars = {}
+print("Screen size: X:"..x.." Y:"..y.." AREA:"..x*y)
+
+if (x < 18) or x * (y-1) < 1000 then
+  print("ERROR: screen is too small")
+end
+
+function getSize()
+  x, y = mon.getSize()
+end
+
+function pos(xPos,yPos)
+  mon.setCursorPos(xPos,yPos)
+end
+
+function get(thing,jars)
+result = 0
+  for i=1,#jars do
+    result = result + peripheral.call(jars[i], "getAspectCount", thing) 
+  end
+
+return result
+
+end
+
+function allJars()
+  list = {}
+  
+  for _, name in pairs(peripheral.getNames()) do
+    if peripheral.getType(name) == "tilejar" or peripheral.getType(name) == "tilejarvoid" then
+      table.insert(list, name) 
+    end
+  end
+    return list
+  
+end
+ 
+
+function write(txt)
+  mon.write(txt)
+end
+
+function draw(jars)
+  mon.setBackgroundColor(colors.gray)
+  getSize()
+  col = x / 18
+  row = 50
+  count = 1
+
+  for i=1,#aspects do
+    essence[i] = get(string.lower(aspects[i]),jars)
+  end 
+  
+  mon.clear()
+  pos((x/2)-2,1) 
+  write("Aspects")
+  
+  for i=1,col do
+    for z=2,y do
+      if 5+(start+((i-1)*18)+13) < x and count < row then
+        pos(start+((i-1)*18),z)
+        write(aspects[count])
+        pos(start+((i-1)*18)+13,z)
+        write(string.format("%i",essence[count]))
+        if count <= row then
+          count = count+1
+        end
+        
+        --sleep(0.01)
+      end 
+    end
+  end  
+end
+
+while true do
+
+  jars = allJars()
+  draw(jars)
+  sleep(3)
+  
+end
